@@ -8,6 +8,11 @@ pal-heartbeat: makes the Pi Pal's RGB LED beat like a heart.
   Slow breathing     plugged in and charging
   Rainbow            `touch /run/pal/wave` (the "find my Pal" command)
 
+Pi Pals Pro (talking Pals) also write /run/pal/mood while you chat:
+  listening          steady soft blue      (it's hearing you)
+  thinking           quick purple swirl    (the AI is working)
+  speaking           cyan flicker          (it's talking back)
+
 Battery level is read from /run/pal/battery (a number 0-100) and charging state
 from /run/pal/charging ("1" or "0"). Those files are written by pal-batteryd.
 
@@ -30,6 +35,7 @@ import argparse, math, os, time
 BATTERY_FILE = "/run/pal/battery"
 CHARGING_FILE = "/run/pal/charging"
 WAVE_FILE = "/run/pal/wave"
+MOOD_FILE = "/run/pal/mood"
 
 PINS = {"red": 17, "green": 27, "blue": 22}
 FPS = 50
@@ -64,6 +70,18 @@ def breathing(t, period=4.0):
 def rainbow(t):
     h = (t * 0.5) % 1.0
     return tuple(max(0.0, min(1.0, abs((h * 6 + o) % 6 - 3) - 1)) for o in (0, 4, 2))
+
+
+def mood_frame(t, mood):
+    """Colour/brightness for the talking-Pal moods, or None for the normal heartbeat."""
+    if mood == "listening":
+        return (0.10, 0.35, 1.00), 0.75
+    if mood == "thinking":
+        return (0.65, 0.10, 1.00), 0.35 + 0.65 * (0.5 - 0.5 * math.cos(2 * math.pi * t / 0.8))
+    if mood == "speaking":
+        wobble = 0.5 + 0.25 * math.sin(t * 23) + 0.25 * math.sin(t * 37)
+        return (0.00, 0.85, 0.85), 0.35 + 0.65 * wobble
+    return None
 
 
 def read_file(path, default=None):
@@ -169,6 +187,7 @@ def main():
     state, level, charging = "unknown", None, False
     last_check = -10.0
     wave_until = 0.0
+    mood, last_mood_check = None, -1.0
 
     try:
         while True:
@@ -190,8 +209,15 @@ def main():
                     except OSError:
                         pass
 
+            if t - last_mood_check >= 0.1:            # moods change quickly while chatting
+                last_mood_check = t
+                mood = read_file(MOOD_FILE)
+
+            mf = mood_frame(t, mood)
             if t < wave_until:
                 led.show(rainbow(t), 1.0)
+            elif mf:
+                led.show(*mf)
             else:
                 rgb, brightness = frame(t, state, charging)
                 led.show(rgb, brightness)

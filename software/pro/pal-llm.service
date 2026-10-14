@@ -1,0 +1,16 @@
+[Unit]
+Description=Pi Pal Pro - AI brain (llama.cpp server, local only)
+After=network.target
+
+[Service]
+EnvironmentFile=/etc/pal/voice.env
+# Listens on this Pal only (127.0.0.1). -c 2048: short chats keep memory use low on 4 GB.
+ExecStart=/opt/pal/llama.cpp/build/bin/llama-server -m ${PAL_MODEL_FILE} \
+  --host 127.0.0.1 --port 8080 -t 4 -c 2048 --mlock
+Restart=on-failure
+RestartSec=5
+Nice=-5
+LimitMEMLOCK=infinity
+
+[Install]
+WantedBy=multi-user.target

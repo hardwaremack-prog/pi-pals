@@ -1,0 +1,13 @@
+[Unit]
+Description=Pi Pal Pro - push to talk
+After=pal-llm.service sound.target
+Wants=pal-llm.service
+
+[Service]
+EnvironmentFile=/etc/pal/voice.env
+ExecStart=/opt/pal/venv/bin/python /usr/local/bin/pal-voice
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

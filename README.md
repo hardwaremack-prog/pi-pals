@@ -8,6 +8,8 @@ Every Pal comes with **[The Shelf](https://github.com/hardwaremack-prog/the-shel
 
 They're something you'd actually want to carry around: a pocket coding lab, a desk buddy, an offline file-sharing hub, or a gift.
 
+✨ **New: [Pi Pals Pro](#-pi-pals-pro-a-pal-you-can-talk-to)** is a bigger Raspberry Pi 5 Pal you can **talk to**. Its AI runs entirely inside it, and the README includes model speeds in tokens per second.
+
 > **Status:** concept / design stage. "Pi Pals" is a working name.
 
 <p align="center">
@@ -86,7 +88,93 @@ A whole set of everyday apps, opened from The Shelf, with a "Saved" light in eac
 
 Each person picks their name from a dropdown, so everyone's saves stay separate, even with several phones connected to one Pal.
 
-> **Pi Zero 2 W note:** the Zero 2 W has only 512 MB of RAM. The Shelf and the Tidy Suite apps are light, but The Shelf's local AI chat tab needs more memory than a Pal has, so that tab is best used on a bigger Pi.
+> **Pi Zero 2 W note:** the Zero 2 W has only 512 MB of RAM. The Shelf and the Tidy Suite apps are light, but The Shelf's local AI chat tab needs more memory than a regular Pal has. For AI, see [Pi Pals Pro](#-pi-pals-pro-a-pal-you-can-talk-to).
+
+## ✨ Pi Pals Pro: a Pal you can talk to
+
+A bigger Pal built on a **Raspberry Pi 5 (4 GB)**. Hold its heart, ask it something, let go, and it answers out loud in its own character's voice. Everything runs inside the Pal, with no internet, no account and no cloud. It still comes with The Shelf and Tidy Suite, and The Shelf's AI chat tab works on it too.
+
+### Is a Pi 5 fast enough?
+
+**Yes, for a friendly chat with a small AI model. No, for ChatGPT-level smarts.**
+
+- People talk at about 3–4 tokens a second, so any model that writes faster than about 5 tokens a second keeps up with speech.
+- On a Pi 5, the 1–1.5 billion-parameter models write **7–15 tokens a second**, comfortably faster than talking.
+- With the default model, you hear the first words about **2–4 seconds** after you let go of the button.
+- These small models are great for chatting, simple questions, jokes, stories and homework-style help. They aren't great at hard facts or long reasoning, and they can be confidently wrong, so the Pal is told to say when it isn't sure.
+
+### AI models that fit a 4 GB Pal
+
+The speeds below are for a Pi 5 running llama.cpp on its CPU (4 threads) with 4-bit (Q4_K_M) models. They're **typical ranges from published Pi 5 tests, not measured on a Pal yet**. Run `pal-bench` on your own Pal to get its real numbers (see below).
+
+| Model | Download | Reply speed (tokens/sec) | Keeps up with talking? | What it's like |
+|---|---|---|---|---|
+| Qwen2.5 0.5B (`fast`) | 0.4 GB | ~20–30 | ✅ easily | Instant, but simple and more often wrong |
+| Llama 3.2 1B | 0.8 GB | ~10–15 | ✅ easily | Quick and chatty |
+| Gemma 3 1B | 0.8 GB | ~10–14 | ✅ easily | Quick and friendly |
+| **Qwen2.5 1.5B** (default) ⭐ | 1.1 GB | ~7–10 | ✅ yes | **Best mix of speed and sense** |
+| Llama 3.2 3B (`smart`) / Qwen2.5 3B | 2.0 GB | ~3.5–5 | ⚠️ just about | Noticeably smarter, with noticeable pauses |
+| Phi-3.5 mini 3.8B | 2.4 GB | ~2.5–4 | ❌ lags | Too tight for 4 GB alongside The Shelf |
+| 7–8B models | 4.5 GB+ | — | ❌ | Won't fit in 4 GB (an 8 GB Pi 5 manages ~1.5–2.5) |
+
+**Hearing and speaking**
+
+| Part | Tool | Speed on a Pi 5 (typical) |
+|---|---|---|
+| Hearing you | whisper.cpp, `base.en` model | About 1–2 s to understand a short sentence (`tiny.en` is about twice as fast but makes more mistakes) |
+| Talking back | Piper, `amy-low` voice | Faster than real time. It starts speaking each sentence as soon as the AI finishes writing it |
+
+### What about the AI HAT+ 2?
+
+Raspberry Pi's **AI HAT+ 2** (Hailo-10H chip, 40 TOPS, its own 8 GB of memory, about $130) can run AI models on the HAT itself. In early reviews it ran small chat models at **about the same speed as the Pi 5's own CPU, or slower**, and only with Hailo's own list of models. It's much better at camera and vision work, and it leaves the CPU free. For a talking Pal it adds cost, size and heat without making replies faster, so **Pro v1 skips it**. It's worth another look if a later Pal gets a camera, for example one that recognizes your face.
+
+### What's inside a Pro Pal
+
+The shell is bigger, about the size of a **small cantaloupe** (roughly 130–150 mm). The Pi 5 board is 85 × 56 mm and needs a fan.
+
+| Part | Why | Rough cost |
+|---|---|---|
+| Raspberry Pi 5, 4 GB | The brain | ~$60 |
+| Active Cooler | AI keeps all four cores busy; without a fan it slows down from heat | ~$5 |
+| 5 V / 5 A battery board (UPS HAT) with 18650 or 21700 cells | The Pi 5 needs up to 5 A; ordinary Pi Zero battery boards can't supply it | ~$50–75 |
+| Small USB mic | Hearing | ~$5–10 |
+| 3 W speaker + MAX98357A amp | Talking | ~$8 |
+| Push-to-talk button behind the heart | Hold to talk | ~$1 |
+| microSD 32 GB+ (or an NVMe drive) | Room for models | ~$10 |
+| Shell, heart LED, switch, USB-C port | Same as a regular Pal | ~$10 |
+| **Total** | | **~$150–180** |
+
+**Battery life (estimate):** about 3 W sitting idle and 8–10 W while it's thinking. A pack of four 18650 cells (about 40 Wh) gives roughly **4 hours of non-stop chatting**, or most of a day of normal use. Prices are rough and move around; Pi 5 prices went up in late 2025 when memory got more expensive.
+
+### The heart shows what it's doing
+
+| Heart | Meaning |
+|---|---|
+| 💙 Steady blue | Listening |
+| 💜 Quick purple swirl | Thinking |
+| 🩵 Cyan flicker | Talking |
+| 💚💛❤️ Heartbeat | Battery, the same as a regular Pal |
+
+Each character has its own personality. Pip is cheerful and curious, Dot loves nature facts, Gourdy is a tiny bit spooky, and so on. Set yours in `/etc/pal/voice.env`.
+
+### Set it up
+
+On 64-bit Raspberry Pi OS Lite on a Pi 5 (4 GB):
+
+```bash
+cd pi-pals/software/pro
+sudo ./install-pro.sh                  # default brain: Qwen2.5 1.5B
+sudo PAL_MODEL=fast ./install-pro.sh   # or the quickest: Qwen2.5 0.5B
+sudo PAL_MODEL=smart ./install-pro.sh  # or the smartest that fits: Llama 3.2 3B
+```
+
+This builds llama.cpp and whisper.cpp (about 20 minutes on a Pi 5), installs Piper, downloads the models and starts two services. After that:
+
+```bash
+pal-voice --keyboard     # talk using Enter instead of the button (handy over SSH)
+pal-voice --text         # type to it; it still talks back
+pal-bench                # measure every model's speed on THIS Pal -> bench-results.md
+```
 
 ## Software
 
@@ -140,6 +228,9 @@ The [concept PDF](docs/Pi-Pals-Concept.pdf) covers the idea, character lineup, h
 |---|---|
 | [`software/pal-heartbeat.py`](software/pal-heartbeat.py) | Drives the heartbeat LED from the battery level. Smart LED by default; `--led rgb` for the older four-leg kind; `--demo` to cycle through the beats. |
 | [`software/pal-heartbeat.service`](software/pal-heartbeat.service) | systemd service so the heartbeat starts at boot. Install notes are at the top of the file. |
+| [`software/pro/pal-voice.py`](software/pro/pal-voice.py) | **Pro:** push-to-talk loop. Whisper hears you, the local AI answers in character, Piper speaks it sentence by sentence, and the heart shows listening, thinking or talking. |
+| [`software/pro/pal-bench.sh`](software/pro/pal-bench.sh) | **Pro:** downloads each model that fits and measures prompt and reply tokens/sec on your Pal, writing a table to `bench-results.md` |
+| [`software/pro/install-pro.sh`](software/pro/install-pro.sh) | **Pro:** builds llama.cpp and whisper.cpp, installs Piper and the models, and starts `pal-llm` and `pal-voice` |
 
 ## Things to sort out before selling
 
