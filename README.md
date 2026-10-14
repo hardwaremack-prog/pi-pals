@@ -8,6 +8,12 @@ They're something you'd actually want to carry around: a pocket coding lab, a de
 
 > **Status:** concept / design stage. "Pi Pals" is a working name.
 
+<p align="center">
+  <a href="docs/Pi-Pals-Concept.pdf"><img src="docs/screenshots/cover.png" width="420" alt="Pi Pals concept brief cover"></a>
+</p>
+
+📄 **[Read the full concept brief (PDF, 9 pages)](docs/Pi-Pals-Concept.pdf)**
+
 ---
 
 ## Meet the Pals
@@ -75,6 +81,25 @@ Plus a rainbow "wave" effect for fun.
 ## Unboxing
 
 Flip the switch → the heart glows → join the Pal's Wi‑Fi → open VNC → you're on its desktop.
+
+## Concept brief
+
+The [concept PDF](docs/Pi-Pals-Concept.pdf) covers the idea, character lineup, hardware cutaway and costs, the heartbeat light, how the software fits together, shell and task-manager mockups, the unboxing flow, and a roadmap with price ideas.
+
+![All pages of the Pi Pals concept brief](docs/screenshots/all-pages.png)
+
+| Meet the lineup | A cutaway of Pip |
+|---|---|
+| ![Character lineup](docs/screenshots/characters.png) | ![Hardware cutaway](docs/screenshots/cutaway.png) |
+| **The heartbeat light** | **What you see once connected** |
+| ![Heartbeat light](docs/screenshots/heartbeat.png) | ![Software mockups](docs/screenshots/software.png) |
+
+## Software in this repo
+
+| File | What it does |
+|---|---|
+| [`software/pal-heartbeat.py`](software/pal-heartbeat.py) | Drives the heartbeat LED from the battery level. Smart LED by default; `--led rgb` for the older four-leg kind; `--demo` to cycle through the beats. |
+| [`software/pal-heartbeat.service`](software/pal-heartbeat.service) | systemd service so the heartbeat starts at boot. Install notes are at the top of the file. |
 
 ## Things to sort out before selling
 
